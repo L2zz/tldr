@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container-custom {
+  display: flex;
+}
+
+.content {
+  flex-basis: 80%;
+  background-color: #fff;
+  padding: 2rem;
+}
+.sidebar {
+  flex: 1;
+  background-color: aqua;
+  position: relative;
+}
+
+.sidebar .info {
+  position: fixed;
+  top: 30px;
+}
+p {
+  margin-bottom: 2rem !important;
+}
+
+.arrow {
+  position: fixed;
+  top: 2rem;
+  font-size: 30px;
+}
+
+.pointer-icon {
+  font-size: 30px;
+  width: 30px;
+}
