@@ -12,6 +12,7 @@
   flex-basis: 80%;
   background-color: #fff;
   padding: 2rem;
+  padding-bottom: 400px;
 }
 .sidebar {
   flex: 1;
@@ -36,4 +37,8 @@ p {
 .pointer-icon {
   font-size: 30px;
   width: 30px;
+}
+
+.bottom-height {
+  height: 600px;
 }
