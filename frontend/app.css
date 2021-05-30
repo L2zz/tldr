@@ -6,23 +6,42 @@
 
 .container-custom {
   display: flex;
+  width: 100%;
 }
 
 .content {
-  flex-basis: 80%;
+  flex-basis: 70%;
   background-color: #fff;
   padding: 2rem;
-  padding-bottom: 400px;
+  padding-bottom: 800px;
 }
 .sidebar {
-  flex: 1;
-  background-color: aqua;
+  position: relative;
+}
+.sidebar .summary-box {
+  border: 1px solid black;
+  overflow-y: scroll;
+  max-height: 40vh;
+  position: fixed;
+}
+.footer-container {
   position: relative;
 }
 
+.sidebar .summary-heading {
+  background-color: aquamarine;
+  top: 0;
+  width: 100%;
+}
+.sidebar .summary-heading h3 {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .sidebar .info {
-  position: fixed;
-  top: 30px;
+  /* width: 100%; */
+  padding: 10px;
 }
 p {
   margin-bottom: 2rem !important;
