@@ -71,7 +71,7 @@ def set_params():
             .format(args.length, ', '.join(length.keys())))
 
 
-def get_model(model_name):
+def get_model(model_name=_params['model']):
     """Get model and tokenizer from pretrained model
 
     Args:
@@ -92,12 +92,32 @@ def get_model(model_name):
     return model, tokenizer
 
 
+def ext_summarize(model, tokenizer, body, length):
+    """Extract summary from the body
+
+    This function summarize extractive way, 
+    user can set model, tokenizer, and the length of the summary.
+
+    Args:
+        model: Model instance to use
+        tokenizer: Tokenizer instance to use
+        body (string): Target content to summarize
+        length (float): The ratio of sentences in final summary
+
+    Returns:
+        result (string): Summary which consists of key sentences in body.
+    """
+    summarizer = Summarizer(custom_model=model, custom_tokenizer=tokenizer)
+    result = summarizer(body, ratio=length)
+
+    return result
+
+
 def main():
     set_params()
     model, tokenizer = get_model(_params['model'])
-    summarizer = Summarizer(custom_model=model, custom_tokenizer=tokenizer)
-    result = summarizer(
-        _params['body'], ratio=_params['length'])
+    result = ext_summarize(
+        model, tokenizer, _params['body'], _params['length'])
     print(result)
 
 
