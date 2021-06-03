@@ -34,7 +34,63 @@ All sections consist of headers and content (which consists of paragraphs). For 
 
 Note: there might be inconsistency of data structure on section 'Related work', but this due to the fact that we wanted to implement paraphrasing feature so much, and thus sacrificed bit of consistensy in the representation of data.
 
+Basically everything happens in this app.js file. 
 
+
+    data.sections.forEach((section, i) => {
+      const sectionElement = document.createElement("section");
+      const sectionHeading = document.createElement("h2");
+      sectionHeading.textContent = section.sectionHeading;
+      sectionElement.append(sectionHeading);
+      section.sectionContent.forEach((p) => {
+        const sectionParagraph = document.createElement("p");
+        sectionParagraph.setAttribute("class", "paragraph");
+        sectionParagraph.setAttribute("id", `id${i}id`);
+        sectionParagraph.textContent = p;
+        sectionElement.appendChild(sectionParagraph);
+      });
+      content.append(sectionElement);
+    });
+    
+We create sections, headers and place paragraphs in paragraph elements.
+
+    const paragraphs = document.querySelectorAll("section");
+    window.addEventListener("scroll", (e) => {
+      for (let i = paragraphs.length - 1; i >= 0; i--) {
+        const paragraph = paragraphs[i];
+        let topHeight =
+          paragraph.getBoundingClientRect().height +
+          i * 30 +
+          i * 38 +
+          title.getBoundingClientRect().height +
+          (i > 2 ? -70 + i * -13 : 0);
+
+        for (let j = 0; j < i; j++) {
+          if (paragraphs[j] === paragraph) {
+            return;
+          } else {
+            topHeight = topHeight + paragraphs[j].getBoundingClientRect().height;
+          }
+        }
+
+        if (window.pageYOffset < topHeight) {
+          index = i;
+          const info = document.querySelector(".info");
+          const infoHeading = document.querySelector(".summary-heading h3");
+          if (data.sections[i].summary[type][length].text) {
+            window.allWords = data.sections[i].summary[type][length].text;
+            window.allMeanings = data.sections[i].summary[type][length].meanings;
+            elements();
+          } else {
+            info.textContent = data.sections[i].summary[type][length];
+            infoHeading.textContent = data.sections[i].sectionHeading;
+          }
+        }
+      }
+    });
+
+
+This is the most important part of the code. We choose all the sections, then find the heightso of sections on the user's monitor, calculate ditances, size of title etc. If the distance that user scrolled is longer than the height, then update happens, otherwise - not.
 
 
 #### /backend/python
