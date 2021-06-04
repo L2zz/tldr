@@ -71,7 +71,7 @@ def set_params():
             .format(args.length, ', '.join(length.keys())))
 
 
-def get_model(model_name):
+def get_model(model_name=_params['model']):
     """Get model and tokenizer from pretrained model
 
     Args:
@@ -88,6 +88,7 @@ def get_model(model_name):
 
     return model, tokenizer
 
+
 def remove_tags(output):
     """Remove <s></s> tags in outputs
 
@@ -100,16 +101,39 @@ def remove_tags(output):
     return output[8:-4]
 
 
-def main():
-    set_params()
-    model, tokenizer = get_model(_params['model'])
+def abst_summarize(model, tokenizer, body, length):
+    """Generate summary from the body
+
+    This function summarize abstractive way, 
+    user can set model, tokenizer, and the length of the summary.
+
+    Args:
+        model: Model instance to use
+        tokenizer: Tokenizer instance to use
+        body (string): Target content to summarize
+        length (float): The ratio of sentences in final summary
+
+    Returns:
+        result (string): Summary which consists of generated sentences 
+                        which contain key content of body.
+    """
     inputs = tokenizer.encode(
-        "summarize: " + _params['body'], return_tensors='pt',
+        "summarize: " + body, return_tensors='pt',
         max_length=1024, truncation=True)
     outputs = model.generate(
         inputs, num_beams=4, early_stopping=True,
-        max_length=int(1000*_params['length']), min_length=int(250*_params['length']))
-    print(remove_tags(tokenizer.decode(outputs[0])))
+        max_length=int(1000*length), min_length=int(250*length))
+    result = remove_tags(tokenizer.decode(outputs[0]))
+
+    return result
+
+
+def main():
+    set_params()
+    model, tokenizer = get_model(_params['model'])
+    result = abst_summarize(
+        model, tokenizer, _params['body'], _params['length'])
+    print(result)
 
 
 if __name__ == '__main__':
