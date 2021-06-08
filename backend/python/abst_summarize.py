@@ -20,8 +20,7 @@ Attributes:
 """
 
 import argparse
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, AutoModel, AutoModelWithLMHead
-from transformers.pipelines import pipeline
+from transformers import BartTokenizer, BartForConditionalGeneration
 
 available_models = ['distilbart']
 available_models_src = {
@@ -81,9 +80,9 @@ def get_model(model_name=_params['model']):
         model: Instance of the requested model class
         tokenizer: Instance of the requested tokenizer class
     """
-    tokenizer = AutoTokenizer.from_pretrained(
+    tokenizer = BartTokenizer.from_pretrained(
         available_models_src[model_name])
-    model = AutoModelForSeq2SeqLM.from_pretrained(
+    model = BartForConditionalGeneration.from_pretrained(
         available_models_src[model_name])
 
     return model, tokenizer
