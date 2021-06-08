@@ -170,6 +170,7 @@ img {
 }
 
 .btn-container {
+  position: sticky;
   height: 40px;
   margin-top: 40px;
 }
@@ -190,6 +191,7 @@ img {
   padding-right: 17px;
   box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.2);
   font-family: "Open Sans", sans-serif;
+  padding-bottom: 512px;
 }
 
 #paper-container {
@@ -199,6 +201,7 @@ img {
   margin-top: 140px;
   font-size: 24px;
   text-align: justify;
+  padding-bottom: 512px;
 }
 
 #paper-title {
