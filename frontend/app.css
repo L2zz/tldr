@@ -79,10 +79,30 @@ img {
 }
 
 .card-top {
+  display: grid;
+  grid-template-columns: auto 30px;
   background-color: var(--tldr-green);
   border-radius: 16px 16px 0px 0px;
   text-align: center;
   height: 40px;
+}
+
+.close-btn {
+  display: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 10px;
+  background-color: #ef476f;
+  border-radius: 16px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.close-btn img {
+  width: 14px;
+  height: 14px;
+  transform: rotate(45deg);
+  margin-bottom: 8px;
 }
 
 .card-top h3 {

@@ -173,6 +173,11 @@ function createCard(start, end) {
   }
   const newBottom = newCard.querySelector(".card-bottom");
   newBottom.innerHTML = '';
+  const newClose = newTop.querySelector(".close-btn");
+  newClose.style.display = "block";
+  newClose.addEventListener("click", (e) => {
+    newCard.remove();
+  });
 
   const btn = document.getElementById("add-card-btn");
   infoContainer.insertBefore(newCard, btn);
