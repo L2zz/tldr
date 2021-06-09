@@ -200,6 +200,44 @@ img {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
+.popup-container {
+  display: none;
+  position: sticky;
+  margin-top: 17px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  background-color: #ffc43d;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 14px;
+}
+
+.popup-content {
+  display: grid;
+  grid-template-rows: 24px 24px 24px;
+}
+
+.popup-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 100%;
+  line-height: 24px;
+}
+
+.popup-inputs input {
+  height: 20px;
+  width: 40px;
+  margin-left: 8px;
+}
+
+.popup-btns {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.popup-btns div {
+  margin-right: 8px;
+}
+
 #info-container {
   box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.2);
   font-family: "Open Sans", sans-serif;

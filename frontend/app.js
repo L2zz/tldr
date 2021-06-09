@@ -123,9 +123,26 @@ function initEventListener() {
     toggleList();
   });
 
+  const popup = document.getElementById("add-popup");
   const addBtn = document.getElementById("add-card-btn");
+  const cancelBtn = popup.querySelector(".cancel-btn");
+  const confirmBtn = popup.querySelector(".confirm-btn");
   addBtn.addEventListener("click", (e) => {
-    createCard(0, 1);
+    addBtn.style.display = "none";
+    popup.style.display = "block";
+  });  
+  cancelBtn.addEventListener("click", (e) => {
+    addBtn.style.display = "block";
+    popup.style.display = "none";
+  });
+  confirmBtn.addEventListener("click", (e) => {
+    const begin = document.getElementById("begin-input");
+    const end = document.getElementById("end-input");
+    addBtn.style.display = "block";
+    popup.style.display = "none";
+    createCard(begin.value, end.value);
+    begin.value = "";
+    end.value = "";
   });
 }
 
