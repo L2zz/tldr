@@ -54,6 +54,7 @@ img {
 
 .document-content {
   width: 100%;
+  height: 100vh;
   display: grid;
   grid-template-columns: auto 425px;
 }
@@ -74,6 +75,7 @@ img {
 .card-container {
   position: sticky;
   margin-top: 17px;
+  margin-right: 17px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border-radius: 16px;
 }
@@ -207,7 +209,7 @@ img {
   height: 40px;
   width: 40px;
   margin-top: 17px;
-  margin-left: 185px;
+  margin-left: 168px;
 }
 
 .circle-btn {
@@ -224,6 +226,7 @@ img {
   display: none;
   position: sticky;
   margin-top: 17px;
+  margin-right: 17px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   background-color: #ffc43d;
   border-radius: 16px;
@@ -259,10 +262,12 @@ img {
 }
 
 #info-container {
+  height: 100vh;
   box-shadow: -2px 0px 4px 0px rgba(0, 0, 0, 0.2);
   font-family: "Open Sans", sans-serif;
-  padding-bottom: 512px;
   margin-right: 17px;
+  overflow-y: scroll;
+  padding-bottom: 140px;
 }
 
 #paper-container {
@@ -272,7 +277,12 @@ img {
   margin-top: 140px;
   font-size: 24px;
   text-align: justify;
-  padding-bottom: 512px;
+  overflow-y: scroll;
+  margin-bottom: 140px;
+}
+
+#paper-content {
+  padding-bottom: 355px;
 }
 
 #paper-title {

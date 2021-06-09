@@ -3,6 +3,8 @@ function updateContext() {
   const pointer = document.getElementById("pointer");
   var ptrLoc = pointer.getBoundingClientRect().top - pointer.getBoundingClientRect().height/2;
   for (var i = 0; i < paragraphs.length; i++) {
+    console.log(paragraphs[i].getBoundingClientRect().top,
+    paragraphs[i].getBoundingClientRect().bottom);
     if (paragraphs[i].getBoundingClientRect().top < ptrLoc && 
         paragraphs[i].getBoundingClientRect().bottom > ptrLoc) {
           const ptrTxt = document.getElementById("pointer-context");
@@ -103,6 +105,12 @@ function toggleList() {
 }
 
 function initEventListener() {
+  const paperWindow = document.getElementById("paper-container");
+  paperWindow.addEventListener("scroll", (e) => {
+    updateContext();
+    updateSummary();
+  });
+
   const autoCard =  document.getElementById("auto-card");
   const lenSlider = autoCard.querySelector(".length-slidebar");
   const modelWrapper = autoCard.querySelector(".model-wrapper");
@@ -277,11 +285,6 @@ const initialLoad = () => {
 };
 
 initialLoad();
-
-window.addEventListener("scroll", (e) => {
-  updateContext();
-  updateSummary();
-});
 
 // const sectionOneSelect = document.querySelector("#section-1");
 // const sectionTwoSelect = document.querySelector("#section-2");
