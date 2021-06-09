@@ -3,8 +3,6 @@ function updateContext() {
   const pointer = document.getElementById("pointer");
   var ptrLoc = pointer.getBoundingClientRect().top - pointer.getBoundingClientRect().height/2;
   for (var i = 0; i < paragraphs.length; i++) {
-    console.log(paragraphs[i].getBoundingClientRect().top,
-    paragraphs[i].getBoundingClientRect().bottom);
     if (paragraphs[i].getBoundingClientRect().top < ptrLoc && 
         paragraphs[i].getBoundingClientRect().bottom > ptrLoc) {
           const ptrTxt = document.getElementById("pointer-context");
