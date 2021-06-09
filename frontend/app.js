@@ -44,7 +44,6 @@ function loadPaper() {
       if (i in visualMaps) {
         for (var k in visualMaps[i]) {
           if ((j+1) in visualMaps[i][k]) {
-            console.log(j+1)
             const figure = document.createElement("img");
             const figureDesc = document.createElement("p");
             figure.setAttribute("src", visualMaps[i][k][j+1].src);
@@ -103,6 +102,16 @@ function toggleList() {
 }
 
 function initEventListener() {
+  document.addEventListener("click", (e) => {
+    var target = e.target;
+    if (target.className !== "tkn-div" && target.className !== "synonym") {
+      const synContainers = document.querySelectorAll(".synonym-container");
+      if (typeof synContainers !== "undefined") {
+        synContainers.forEach(e => e.remove());      
+      }
+    }
+  });
+
   const paperWindow = document.getElementById("paper-container");
   paperWindow.addEventListener("scroll", (e) => {
     updateContext();
@@ -113,7 +122,6 @@ function initEventListener() {
   const lenSlider = autoCard.querySelector(".length-slidebar");
   const modelWrapper = autoCard.querySelector(".model-wrapper");
   lenSlider.addEventListener("change", (e) => {
-    console.log(lenSlider.value)
     if (lenSlider.value == 0) {
       sumPara.length = "short";
     } else if (lenSlider.value == 1) {
@@ -122,6 +130,11 @@ function initEventListener() {
       sumPara.length = "long";
     }
     updateSummary();
+  });
+
+  const autoEdit = autoCard.querySelector(".edit-btn");
+  autoEdit.addEventListener("click", (e) => {
+    toggleEditMode();
   });
 
   const curModel = modelWrapper.querySelector("div");
@@ -173,10 +186,11 @@ function createCard(start, end) {
     startSection = data.sections[start].sectionHeading.split(' ')[1];
     endSection = data.sections[end].sectionHeading.split(' ')[1];
     key = `${startSection.toLowerCase()}-${endSection.toLowerCase()}`;
-    console.log(key)
     newTitle.innerText = `${start}. ${startSection} - ${end}. ${endSection}`;
     newText.innerText = sectionsData[key];
   }
+  const newEdit = newCard.querySelector(".card-edit");
+  newEdit.remove();
   const newBottom = newCard.querySelector(".card-bottom");
   newBottom.innerHTML = '';
   const newClose = newTop.querySelector(".close-btn");
@@ -197,6 +211,80 @@ function updateSummary() {
   const autoText = autoContent.querySelector("p");
   autoTitle.innerText = data.sections[context.sid].sectionHeading;
   autoText.innerText = data.sections[context.sid].summary[sumPara.name][sumPara.length];
+}
+
+function getSynonyms(tknDiv) {
+  var tkn = tknDiv.innerText;
+  var tkn_lower = tkn.toLowerCase();
+  tkn_lower = tkn_lower.replace(".", "");
+  tkn_lower = tkn_lower.replace("(", "");
+  tkn_lower = tkn_lower.replace(")", "");
+  tkn_lower = tkn_lower.replace("?", "");
+  tkn_lower = tkn_lower.replace("\"", "");
+
+  result = wordMap[tkn_lower];
+
+  return result;
+}
+
+function toggleEditMode() {
+  const autoCard =  document.getElementById("auto-card");
+  const autoContent = autoCard.querySelector(".card-content");
+  const autoEdit = autoCard.querySelector(".edit-btn");
+  const lenSlider = autoCard.querySelector(".length-slidebar");
+  if (!isEdit) {
+    var tkns = autoContent.innerText.split(' ');
+    autoContent.innerHTML = '';
+    lenSlider.disabled = true;
+    tkns.forEach((tkn) => {
+      const tknDiv = document.createElement("div");
+      tknDiv.setAttribute("class", "tkn-div")
+      tknDiv.innerText=tkn;
+      tknDiv.addEventListener("click", (e) => {
+        result = getSynonyms(tknDiv);
+        if (typeof result !== "undefined") {
+          if (result.length !== 0) {
+            const synonymContainer = document.createElement("div");
+            synonymContainer.setAttribute("class", "synonym-container");
+            var top = tknDiv.getBoundingClientRect().bottom - 
+                      autoContent.getBoundingClientRect().top + 40;
+            var left = tknDiv.getBoundingClientRect().left -
+                      autoContent.getBoundingClientRect().left;
+            synonymContainer.style.top = `${top}px`;
+            synonymContainer.style.left = `${left}px`;
+            for (var i=0; i<result.length; i++) {
+              const synonym = document.createElement("div");
+              synonym.setAttribute("class", "synonym");
+              synonym.innerText = result[i];
+              synonym.addEventListener("click", (e) => {
+                tknDiv.innerText = synonym.innerText;
+                synonymContainer.remove();
+              });
+              synonymContainer.append(synonym);
+            }
+            autoContent.append(synonymContainer);
+          }
+        }
+      });
+      autoContent.append(tknDiv);
+    });
+    autoEdit.innerText = "ok";
+    isEdit = true;
+  } else {
+    const tknDivs = document.getElementsByClassName("tkn-div");
+    var editResult = "";
+    for (var i=0; i < tknDivs.length; i++) {
+      editResult += ' ' + tknDivs[i].innerText;
+    }
+    autoContent.innerHTML = '';
+    const newContent = document.createElement("p");
+    newContent.innerText = editResult;
+    data.sections[context.sid].summary[sumPara.name][sumPara.length] = editResult;
+    autoContent.append(newContent);
+    autoEdit.innerText = "edit";
+    lenSlider.disabled = false;
+    isEdit = false;
+  }
 }
 
 const data = {
@@ -260,6 +348,208 @@ const visualMaps = {
   ]
 };
 
+const wordMap = {
+	"access": ['entree', 'accession', 'admission'],
+	"to": [],
+	"digital": [],
+	"images": ['image', 'mental image', 'persona'],
+	"is": ['be', 'exist', 'equal'],
+	"important": ['of import', 'significant', 'crucial'],
+	"people": ['citizenry', 'multitude', 'masses'],
+	"who": ['World Health Organization', 'WHO'],
+	"are": ['ar', 'be', 'exist'],
+	"blind": ['screen', 'subterfuge', 'dim'],
+	"or": ['Oregon', 'Beaver State', 'OR'],
+	"have": ['rich person', 'wealthy person', 'have got'],
+	"low": ['depression', 'Low', 'David Low'],
+	"vision": ['sight', 'visual sense', 'visual modality'],
+	"blv": [],
+	"many": [],
+	"contemporary": ['coeval', 'modern-day', 'present-day'],
+	"image": ['mental image', 'persona', 'picture'],
+	"description": ['verbal description'],
+	"efforts": ['attempt', 'effort', 'endeavor'],
+	"do": ['bash', 'brawl', 'doh'],
+	"not": ['non'],
+	"take": ['return', 'issue', 'takings'],
+	"into": [],
+	"account": ['history', 'chronicle', 'story'],
+	"this": [],
+	"population’s": [],
+	"nuanced": [],
+	"preferences": ['preference', 'penchant', 'predilection'],
+	"population's": [],
+	"we": [],
+	"provide": ['supply', 'render', 'furnish'],
+	"recommendations": ['recommendation', 'testimonial', 'good word'],
+	"for": [],
+	"the": [],
+	"development": ['evolution', 'growth', 'growing'],
+	"of": [],
+	"next-generation": [],
+	"technologies": ['technology', 'engineering', 'engineering science'],
+	"inspired": ['inspire', 'animate', 'invigorate'],
+	"by": ['past', 'aside', 'away'],
+	"our": [],
+	"empirical": ['empiric'],
+	"analysis": ['analytic thinking', 'psychoanalysis', 'depth psychology'],
+	"study": ['survey', 'work', 'report'],
+	"provides": ['supply', 'provide', 'render'],
+	"insight": ['penetration', 'perceptiveness', 'perceptivity'],
+	"people's": [],
+	"experiences": ['experience', 'see', 'go through'],
+	"with": [],
+	"descriptions": ['description', 'verbal description'],
+	"from": [],
+	"news": ['intelligence', 'tidings', 'word'],
+	"websites,": [],
+	"social": ['sociable', 'mixer', 'societal'],
+	"networking": ['network'],
+	"sites/platforms,": [],
+	"ecommerce": [],
+	"employment": ['employ', 'work', 'engagement'],
+	"online": ['on-line'],
+	"dating": ['geological dating', 'date', 'date stamp'],
+	"productivity": ['productiveness'],
+	"applications,": [],
+	"and": [],
+	"e-publications": [],
+	"findings": ['determination', 'finding', 'find'],
+	"reveal": ['uncover', 'bring out', 'unveil'],
+	"how": [],
+	"vary": ['change', 'alter', 'deviate'],
+	"based": ['establish', 'base', 'ground'],
+	"on": ['along'],
+	"source": ['beginning', 'origin', 'root'],
+	"where": [],
+	"encountered": ['meet', 'run into', 'encounter'],
+	"surrounding": ['surround', 'environ', 'ring'],
+	"context": ['linguistic context', 'context of use', 'circumstance'],
+	"back": ['dorsum', 'rear', 'spinal column'],
+	"page": ['Page', 'Sir Frederick Handley Page', 'Thomas Nelson Page'],
+	"you": [],
+	"came": ['come', 'come up', 'arrive'],
+	"from,": [],
+	"contact": ['physical contact', 'impinging', 'striking'],
+	"us": ['United States', 'United States of America', 'America'],
+	"at": ['astatine', 'At', 'atomic number 85'],
+	"http://wwwmailonlineonlinecom/news/science-research-report/blivestories/blueblueblue-blindblindblindness/blueblindness": [],
+	"plentiful": ['ample', 'copious', 'plenteous'],
+	"across": ['crosswise', 'crossways'],
+	"media": ['medium', 'culture medium', 'spiritualist'],
+	"information": ['info', 'data', 'selective information'],
+	"landscape": ['landscape painting'],
+	"a": ['angstrom', 'angstrom unit', 'A'],
+	"popular": ['democratic', 'pop'],
+	"websites": ['web site', 'website', 'internet site'],
+	"in": ['inch', 'indium', 'In'],
+	"categories": ['class', 'category', 'family'],
+	"as": ['arsenic', 'As', 'atomic number 33'],
+	"ranked": ['rank', 'rate', 'range'],
+	"alexacom": [],
+	"found": ['establish', 'set up', 'launch'],
+	"that": [],
+	"between": ['betwixt', "'tween"],
+	"lacked": ['miss', 'lack'],
+	"descriptions,": [],
+	"did": ['make', 'do', 'perform'],
+	"contain": ['incorporate', 'comprise', 'hold'],
+	"alt": ['elevation', 'EL', 'altitude'],
+	"text": ['textual matter', 'textbook', 'text edition'],
+	"had": ['have', 'have got', 'hold'],
+	"extremely": ['highly', 'exceedingly', 'super'],
+	"low-quality": [],
+	"such": [],
+	"word": ['news', 'intelligence', 'tidings'],
+	"filename": ['file name', 'computer filename', 'computer file name'],
+	"designing": ['design', 'plan', 'project'],
+	"services": ['service', 'religious service', 'divine service'],
+	"can": ['tin', 'tin can', 'canful'],
+	"leverage": ['purchase', 'leveraging'],
+	"guidelines": ['guideline', 'road map', 'guidepost'],
+	"write": ['compose', 'pen', 'indite'],
+	"effective": ['effectual', 'efficacious', 'efficient'],
+	"towards": [],
+	"goal": ['end', 'finish', 'destination'],
+	"closing": ['shutting', 'conclusion', 'end'],
+	"gap": ['spread', 'opening', 'crack'],
+	"what": [],
+	"want": ['privation', 'deprivation', 'neediness'],
+	"provided,": [],
+	"present": ['nowadays', 'present tense', 'show'],
+	"qualitative": [],
+	"designed": ['plan', 'project', 'contrive'],
+	"investigate": ['look into', 'inquire', 'enquire'],
+	"file": ['data file', 'single file', 'Indian file'],
+	"particularly": ['peculiarly', 'especially', 'specially'],
+	"problematic;": [],
+	"only": ['lone', 'lonesome', 'sole'],
+	"twitter": ['chirrup', 'chitter'],
+	"though": [],
+	"provision": ['proviso', 'supply', 'supplying'],
+	"best": ['topper', 'Best', 'C. H. Best'],
+	"practice,": [],
+	"most": ['to the highest degree', 'about', 'almost'],
+	"lack": ['deficiency', 'want', 'miss'],
+	"however,": [],
+	"existing": ['exist', 'be', 'survive'],
+	"limited": ['express', 'restrict', 'restrain'],
+	"they": [],
+	"clarify": ['clear up', 'elucidate'],
+	"finding": ['determination', 'find', 'happen'],
+	"petrie": [],
+	"et": [],
+	"al": ['aluminum', 'aluminium', 'Al'],
+	"examples": ['example', 'illustration', 'instance'],
+	"different": ['unlike', 'dissimilar'],
+	"sources": ['beginning', 'origin', 'root'],
+	"shown": ['show', 'demo', 'exhibit'],
+	"figure": ['fig', 'human body', 'physical body'],
+	"these": [],
+	"be": ['beryllium', 'Be', 'glucinium'],
+	"great": ['outstanding', 'bang-up', 'bully'],
+	"value": ['economic value', 'time value', 'note value'],
+	"improving": ['better', 'improve', 'amend'],
+	"human-powered,": [],
+	"computer-powered,": [],
+	"hybrid": ['loanblend', 'loan-blend', 'crossbreed'],
+	"conclude": ['reason', 'reason out', 'resolve'],
+	"regarding": ['see', 'consider', 'reckon'],
+	"incorporate": ['integrate', 'contain', 'comprise'],
+	"computer-powered": [],
+	"enabling": ['enable'],
+	"consume": ['devour', 'down', 'go through'],
+	"content,": [],
+	"variety": ['assortment', 'mixture', 'mixed bag'],
+	"focus": ['focusing', 'focussing', 'focal point'],
+	"alternative": ['option', 'choice', 'alternate'],
+	"read": ['say', 'scan', 'take'],
+	"through": ['done', 'through with', 'through and through'],
+	"screen": ['silver screen', 'projection screen', 'blind'],
+	"reader": ['subscriber', 'reviewer', 'referee'],
+	"interviewed": ['interview', 'question'],
+	"people,": [],
+	"guided": ['steer', 'maneuver', 'manoeuver'],
+	"question:": [],
+	"people’s": [],
+	"draw": ['drawing card', 'attraction', 'attractor'],
+	"following": ['followers', 'pursuit', 'chase'],
+	"definition": [],
+	"source:": [],
+	"platforms": ['platform', 'political platform', 'political program'],
+	"one": ['1', 'I', 'ace'],
+	"may": ['May', 'whitethorn', 'English hawthorn'],
+	"encounter": ['brush', 'clash', 'skirmish'],
+	"focused": ['concentrate', 'focus', 'center'],
+	"investigation": ['probe', 'investigating'],
+	"seven": ['7', 'VII', 'sevener'],
+	"sources:": [],
+	"websites/platforms,": [],
+	"useful": ['utile', 'utilitarian'],
+	"included": ['include', 'admit', 'let in'],
+	"which": []
+};
+
 const context = {
   sid: 0,
   pid: 0
@@ -274,6 +564,8 @@ const sumPara = {
 
 let isOpen = false;
 
+let isEdit = false;
+
 const initialLoad = () => {
   clearPaper();
   loadPaper();
@@ -283,84 +575,3 @@ const initialLoad = () => {
 };
 
 initialLoad();
-
-// const sectionOneSelect = document.querySelector("#section-1");
-// const sectionTwoSelect = document.querySelector("#section-2");
-// const paragraphContainer = document.querySelector(
-//   ".section-summary-content-box"
-// );
-// const paragraph = document.querySelector(".section-summary-content-box p");
-// paragraphs.forEach((paragraph) => {
-//   paragraph.addEventListener("mouseup", (e) => {
-//     console.log("====================================");
-//     console.log(e.target);
-//     console.log("====================================");
-//     const selection = window.getSelection().toString();
-
-//     if (selection === "") {
-//       console.log("click");
-//     } else {
-//       console.log("selection", selection);
-//     }
-//   });
-// });
-
-// const iconBox = document.querySelector(".icon-box");
-// const plusIcon = document.querySelector(".fas.fa-plus");
-// const inputsContainer = document.querySelector(".section-summary-box__inputs");
-
-// plusIcon.addEventListener("click", function () {
-//   if (iconBox.classList.contains("close")) {
-//     paragraphContainer.classList.add("close");
-//     inputsContainer.classList.add("close");
-//     iconBox.classList.remove("close");
-//     paragraph.textContent = "";
-//   } else {
-//     iconBox.classList.add("close");
-//     inputsContainer.classList.remove("close");
-//     paragraphContainer.classList.remove("close");
-//     paragraph.textContent = sectionsData[`abstract-introduction`];
-
-//     data.sections
-//       .map((section) => section.sectionHeading)
-//       .forEach((heading) => {
-//         const optionElement = document.createElement("option");
-//         optionElement.setAttribute(
-//           "value",
-//           heading.toLowerCase().replaceAll(" ", "-")
-//         );
-//         optionElement.textContent = heading.toLowerCase();
-//         sectionOneSelect.append(optionElement);
-//       });
-//     data.sections
-//       .map((section) => section.sectionHeading)
-//       .forEach((heading) => {
-//         const optionElement = document.createElement("option");
-//         optionElement.setAttribute(
-//           "value",
-//           heading.toLowerCase().replaceAll(" ", "-")
-//         );
-//         optionElement.textContent = heading.toLowerCase();
-//         sectionTwoSelect.append(optionElement);
-//       });
-//   }
-// });
-
-// sectionOneSelect.value = "abstract";
-// sectionTwoSelect.value = "introduction";
-
-// sectionOneSelect.addEventListener("change", (e) => {
-//   paragraph.textContent =
-//     sectionsData[`${sectionOneSelect.value}-${sectionTwoSelect.value}`];
-//   console.log(
-//     sectionsData[`${sectionOneSelect.value}-${sectionTwoSelect.value}`]
-//   );
-// });
-
-// sectionTwoSelect.addEventListener("change", (e) => {
-//   paragraph.textContent =
-//     sectionsData[`${sectionOneSelect.value}-${sectionTwoSelect.value}`];
-//   console.log(
-//     sectionsData[`${sectionOneSelect.value}-${sectionTwoSelect.value}`]
-//   );
-// });
