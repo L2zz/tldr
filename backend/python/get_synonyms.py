@@ -27,10 +27,24 @@ def get_candidates(body):
     """
     tkns = body.split(' ')
     tkns_uniq = list(dict.fromkeys(tkns))
-    for i, tkn in enumerate(tkns_uniq):
-        if '.' in tkn:
-            tkns_uniq[i] = tkn.replace('.', '')
-    candidates = [tkn for tkn in tkns_uniq
+    tkns_lower = [tkn.lower() for tkn in tkns_uniq]
+    for i, _ in enumerate(tkns_lower):
+        if '.' in tkns_lower[i]:
+            tkns_lower[i] = tkns_lower[i].replace('.', '')
+
+        if '(' in tkns_lower[i]:
+            tkns_lower[i] = tkns_lower[i].replace('(', '')
+
+        if ')' in tkns_lower[i]:
+            tkns_lower[i] = tkns_lower[i].replace(')', '')
+
+        if '?' in tkns_lower[i]:
+            tkns_lower[i] = tkns_lower[i].replace('?', '')
+
+        if '\"' in tkns_lower[i]:
+            tkns_lower[i] = tkns_lower[i].replace('\"', '')
+
+    candidates = [tkn for tkn in tkns_lower
                   if '[' not in tkn and ']' not in tkn and not any(c.isdigit() for c in tkn)]
     if '\n' in candidates:
         candidates.remove('\n')
